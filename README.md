@@ -1,9 +1,9 @@
 
 ## 1. Install IBM Blockchain extension on VSCode
-a. Open VScode inside contract folder
-b. Package the smart contract globalPatent.js
-c. Install the chaincode
-d. Instantiate the chaincode
+a. Open VScode inside contract folder  
+b. Package the smart contract globalPatent.js  
+c. Install the chaincode  
+d. Instantiate the chaincode  
 
 ## 2. Run the client
 
