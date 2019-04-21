@@ -8,41 +8,22 @@ const { Contract } = require('fabric-contract-api');
 
 // predefined order states
 const patentStatus = {
-    Created: {code: 1, text: 'Patent Request Created'},
+    Created: {code: 1, text: 'Patent Created'},
     Verified: {code: 2, text: 'Patent Verified'},
     Rejected: {code: 3, text: 'Patent Rejected'},
     Published: {code: 4, text: 'Patent Published'}
 };
 
 // Global Finance contract
-class GlobalFinance extends Contract {
+class GlobalPatent extends Contract {
 
      // instantiate with keys to collect participant ids
      async instantiate(ctx) {
 
-        let ownerList = [
-            {type: "owner", pw: "owner1", companyName: "HSBC", id: "owner1@hsbc.com"},
-            {type: "owner", pw: "owner2", companyName: "HSBC", id: "owner2@hsbc.com"},
-            {type: "owner", pw: "owner3", companyName: "HSBC", id: "owner3@hsbc.com"},
-            {type: "owner", pw: "owner4", companyName: "HSBC", id: "owner4@hsbc.com"}
-        ];
-        let verifierList = [
-            {type: "verifier", pw: "verifier1", companyName: "NBE", id: "verifier1@nbe.com"},
-            {type: "verifier", pw: "verifier2", companyName: "NBE", id: "verifier2@nbe.com"},
-            {type: "verifier", pw: "verifier3", companyName: "NBE", id: "verifier3@nbe.com"},
-            {type: "verifier", pw: "verifier4", companyName: "NBE", id: "verifier4@nbe.com"}
-        ];
-        let publisherList = [
-            {type: "publisher", pw: "publisher1", companyName: "FGB", id: "publisher1@fgb.com"},
-            {type: "publisher", pw: "publisher2", companyName: "FGB", id: "publisher2@fgb.com"},
-            {type: "publisher", pw: "publisher3", companyName: "FGB", id: "publisher3@fgb.com"},
-            {type: "publisher", pw: "publisher4", companyName: "FGB", id: "publisher4@fgb.com"} 
-        ];
-        let patentList = [
-            {patentNumber: "1", industry: "gov", description: "gov patent", status: "Published", owners: [{ownerId: "owner1"}], verifierId: "verifier1", publisherId: "publisher1" },
-            {patentNumber: "2", industry: "banking", description: "banking patent", status: "Published", owners: [{ownerId: "owner2"}], verifierId: "verifier2", publisherId: "publisher2" }
-
-        ];
+        let ownerList = [];
+        let verifierList = [];
+        let publisherList = [];
+        let patentList = [];
 
         await ctx.stub.putState('owners', Buffer.from(JSON.stringify(ownerList)));
         await ctx.stub.putState('verifiers', Buffer.from(JSON.stringify(verifierList)));
@@ -126,7 +107,7 @@ class GlobalFinance extends Contract {
     }
 
     // add a patent object to the blockchain state identifited by the patentNumber
-    async CreatePatent(ctx, ownerId, publisherId, verifierId, patentNumber, description, industry) {
+    async CreatePatent(ctx, patentNumber, industry, description, ownerId, publisherId, verifierId) {
 
         // verify ownerId
         let ownerData = await ctx.stub.getState(ownerId);
@@ -163,6 +144,8 @@ class GlobalFinance extends Contract {
         } else {
             throw new Error('publisher not found');
         }
+
+        console.log("reached patent");
 
         let patent = {
             patentNumber: patentNumber,
@@ -338,4 +321,4 @@ class GlobalFinance extends Contract {
     }
 }
 
-module.exports = GlobalFinance;
+module.exports = GlobalPatent;

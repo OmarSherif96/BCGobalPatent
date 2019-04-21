@@ -41,11 +41,9 @@ const ccp = JSON.parse(ccpJSON);
 exports.getRegistries = function(req, res, next)
 {
     var allRegistries = [ 
-        [ 'Buyer' ],
-        [ 'FinanceCo' ],
-        [ 'Provider' ],
-        [ 'Seller' ],
-        [ 'Shipper' ] 
+        [ 'Owner' ],
+        [ 'Verifier' ],
+        [ 'Publisher' ]
     ];
     res.send({'result': 'success', 'registries': allRegistries});
    
@@ -78,39 +76,27 @@ exports.getMembers = async function(req, res, next) {
         const network = await gateway.getNetwork('mychannel');
 
         // Get addressability to  contract
-        const contract = await network.getContract('globalfinancing');
+        const contract = await network.getContract('globalpatent');
                 
         switch (req.body.registry)
         {
-            case 'Buyer':
-                const responseBuyer = await contract.evaluateTransaction('GetState', "buyers");
-                console.log('responseBuyer: ');
-                console.log(JSON.parse(responseBuyer.toString()));
-                members = JSON.parse(JSON.parse(responseBuyer.toString()));
+            case 'Owner':
+                const responseOwner = await contract.evaluateTransaction('GetState', "owners");
+                console.log('responseOwner: ');
+                console.log(JSON.parse(responseOwner.toString()));
+                members = JSON.parse(JSON.parse(responseOwner.toString()));
                 break;            
-            case 'Seller':
-                const responseSeller = await contract.evaluateTransaction('GetState', "sellers");
-                console.log('responseSeller: ');
-                console.log(JSON.parse(responseSeller.toString()));
-                members = JSON.parse(JSON.parse(responseSeller.toString()));
+            case 'Verifier':
+                const responseVerifier = await contract.evaluateTransaction('GetState', "verifiers");
+                console.log('responseVerifier: ');
+                console.log(JSON.parse(responseVerifier.toString()));
+                members = JSON.parse(JSON.parse(responseVerifier.toString()));
                 break;
-            case 'Provider':
-                const responseProvider = await contract.evaluateTransaction('GetState', "providers");
-                console.log('responseProvider: ');
-                console.log(JSON.parse(responseProvider.toString()));
-                members = JSON.parse(JSON.parse(responseProvider.toString()));
-                break; 
-            case 'Shipper':
-                const responseShipper = await contract.evaluateTransaction('GetState', "shippers");
-                console.log('responseShipper: ');
-                console.log(JSON.parse(responseShipper.toString()));
-                members = JSON.parse(JSON.parse(responseShipper.toString()));                
-                break; 
-            case 'FinanceCo':
-                const responseFinanceCo = await contract.evaluateTransaction('GetState', "financeCos");
-                console.log('responseFinanceCo: ');
-                console.log(JSON.parse(responseFinanceCo.toString()));
-                members = JSON.parse(JSON.parse(responseFinanceCo.toString()));
+            case 'Publisher':
+                const responsePublisher = await contract.evaluateTransaction('GetState', "publishers");
+                console.log('responsePublisher: ');
+                console.log(JSON.parse(responsePublisher.toString()));
+                members = JSON.parse(JSON.parse(responsePublisher.toString()));
                 break; 
             default:
                 res.send({'error': 'body registry not found'});
@@ -154,7 +140,7 @@ exports.getMembers = async function(req, res, next) {
 exports.getAssets = async function(req, res, next) {
 
     console.log('getAssets');
-    let allOrders = new Array();
+    let allPatents = new Array();
 
     // Main try/catch block
     try {
@@ -167,27 +153,33 @@ exports.getAssets = async function(req, res, next) {
         const network = await gateway.getNetwork('mychannel');
 
         // Get addressability to  contract
-        const contract = await network.getContract('globalfinancing');
+        const contract = await network.getContract('globalpatent');
         
-        const responseBuyer = await contract.evaluateTransaction('GetState', "buyers");
-        console.log('responseBuyer: ');
-        console.log(JSON.parse(responseBuyer.toString()));
-        var buyers = JSON.parse(JSON.parse(responseBuyer.toString()));
+        const responseOwner = await contract.evaluateTransaction('GetState', "owners");
+        console.log('responseOwner: ');
+        console.log(JSON.parse(responseOwner.toString()));
+        var owners = JSON.parse(JSON.parse(responseOwner.toString()));
 
-        for (let buyer of buyers) { 
-            const buyerResponse = await contract.evaluateTransaction('GetState', buyer);
+        for (let owner of owners) { 
+            const ownerResponse = await contract.evaluateTransaction('GetState', owner);
             console.log('response: ');
-            console.log(JSON.parse(buyerResponse.toString()));
-            var _buyerjsn = JSON.parse(JSON.parse(buyerResponse.toString()));       
+            console.log(JSON.parse(ownerResponse.toString()));
+            var _ownerjsn = JSON.parse(JSON.parse(ownerResponse.toString()));       
             
-            for (let orderNo of _buyerjsn.orders) { 
-                const response = await contract.evaluateTransaction('GetState', orderNo);
+            for (let patent of _ownerjsn.patents) { 
+                const response = await contract.evaluateTransaction('GetState', patent);
                 console.log('response: ');
                 console.log(JSON.parse(response.toString()));
                 var _jsn = JSON.parse(JSON.parse(response.toString()));
-                var _jsnItems = JSON.parse(_jsn.items);
-                _jsn.items = _jsnItems;
-                allOrders.push(_jsn);            
+                console.log(' _jsn: ');
+                console.log(_jsn);
+                var _jsnPatentNumber = _jsn.patentNumber;
+                console.log('_jsnPatentNUmber:');
+                console.log(_jsnPatentNumber);
+                _jsn.patentNumber = _jsnPatentNumber;
+                console.log('_jsn.patentNumber');
+                console.log(_jsn.patentNumber);
+                allPatents.push(_jsn);            
             }                           
         }
         
@@ -195,7 +187,7 @@ exports.getAssets = async function(req, res, next) {
         console.log('Disconnect from Fabric gateway.');
         console.log('getAssets Complete');
         await gateway.disconnect();
-        res.send({'result': 'success', 'orders': allOrders});
+        res.send({'result': 'success', 'patents': allPatents});
         
     } catch (error) {
         console.log(`Error processing transaction. ${error}`);
@@ -232,29 +224,21 @@ exports.addMember = async function(req, res, next) {
         const network = await gateway.getNetwork('mychannel');
 
         // Get addressability to  contract
-        const contract = await network.getContract('globalfinancing');        
+        const contract = await network.getContract('globalpatent');        
 
         switch (req.body.type)
         {
-            case 'Buyer':
-                const responseBuyer = await contract.evaluateTransaction('GetState', "buyers");
-                members = JSON.parse(JSON.parse(responseBuyer.toString()));
+            case 'Owner':
+                const responseOwner = await contract.evaluateTransaction('GetState', "owners");
+                members = JSON.parse(JSON.parse(responseOwner.toString()));
                 break;            
-            case 'Seller':
-                const responseSeller = await contract.evaluateTransaction('GetState', "sellers");
-                members = JSON.parse(JSON.parse(responseSeller.toString()));
+            case 'Verifier':
+                const responseVerifier = await contract.evaluateTransaction('GetState', "verifiers");
+                members = JSON.parse(JSON.parse(responseVerifier.toString()));
                 break;
-            case 'Provider':
-                const responseProvider = await contract.evaluateTransaction('GetState', "providers");
-                members = JSON.parse(JSON.parse(responseProvider.toString()));
-                break; 
-            case 'Shipper':
-                const responseShipper = await contract.evaluateTransaction('GetState', "shippers");
-                members = JSON.parse(JSON.parse(responseShipper.toString()));
-                break; 
-            case 'FinanceCo':
-                const responseFinanceCo = await contract.evaluateTransaction('GetState', "financeCos");
-                members = JSON.parse(JSON.parse(responseFinanceCo.toString()));
+            case 'Publisher':
+                const responsePublisher = await contract.evaluateTransaction('GetState', "publishers");
+                members = JSON.parse(JSON.parse(responsePublisher.toString()));
                 break; 
             default:
                 res.send({'error': 'body type not found'});

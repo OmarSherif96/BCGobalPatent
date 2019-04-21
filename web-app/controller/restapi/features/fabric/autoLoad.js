@@ -60,7 +60,8 @@ exports.autoLoad = async function autoLoad(req, res, next) {
 
     // get the autoload file
     let newFile = path.join(path.dirname(require.main.filename),'startup','memberList.json');
-    let startupFile = JSON.parse(fs.readFileSync(newFile));        
+    let startupFile = JSON.parse(fs.readFileSync(newFile));
+    console.log(startupFile);        
 
     // Main try/catch block
     try {
@@ -73,23 +74,19 @@ exports.autoLoad = async function autoLoad(req, res, next) {
         const network = await gateway.getNetwork('mychannel');
 
         // Get addressability to  contract
-        const contract = await network.getContract('globalfinancing');
-
+        const contract = await network.getContract('globalpatent');
+        console.log("get list of owners, verifiers, publishers");
         //get list of buyers, sellers, providers, shippers, financeCos
-        const responseBuyer = await contract.evaluateTransaction('GetState', "buyers");
-        let buyers = JSON.parse(JSON.parse(responseBuyer.toString()));
+        const responseBuyer = await contract.evaluateTransaction('GetState', "owners");
+        let owners = JSON.parse(JSON.parse(responseBuyer.toString()));
                 
-        const responseSeller = await contract.evaluateTransaction('GetState', "sellers");
-        let sellers = JSON.parse(JSON.parse(responseSeller.toString()));
+        const responseSeller = await contract.evaluateTransaction('GetState', "verifiers");
+        let verifiers = JSON.parse(JSON.parse(responseSeller.toString()));
  
-        const responseProvider = await contract.evaluateTransaction('GetState', "providers");
-        let providers = JSON.parse(JSON.parse(responseProvider.toString()));
-
-        const responseShipper = await contract.evaluateTransaction('GetState', "shippers");
-        let shippers = JSON.parse(JSON.parse(responseShipper.toString()));
-        
-        const responseFinanceCo = await contract.evaluateTransaction('GetState', "financeCos");
-        let financeCos = JSON.parse(JSON.parse(responseFinanceCo.toString()));
+        const responseProvider = await contract.evaluateTransaction('GetState', "publishers");
+        let publishers = JSON.parse(JSON.parse(responseProvider.toString()));
+        console.log("done getting ow, ver, pub");
+ 
 
         //iterate through the list of members in the memberList.json file        
         for (let member of startupFile.members) {
@@ -102,28 +99,18 @@ exports.autoLoad = async function autoLoad(req, res, next) {
             var transaction = 'Register' + member.type;
             console.log('transaction: ' + transaction);            
 
-            for (let buyer of buyers) { 
-                if (buyer == member.id) {
+            for (let owner of owners) { 
+                if (owner == member.id) {
                     res.send({'error': 'member id already exists'});
                 }
             }
-            for (let seller of sellers) { 
-                if (seller == member.id) {
+            for (let verifier of verifiers) { 
+                if (verifier == member.id) {
                     res.send({'error': 'member id already exists'});
                 }
             }
-            for (let provider of providers) { 
-                if (provider == member.id) {
-                    res.send({'error': 'member id already exists'});
-                }
-            }
-            for (let shipper of shippers) { 
-                if (shipper == member.id) {
-                    res.send({'error': 'member id already exists'});
-                }
-            }
-            for (let financeCo of financeCos) { 
-                if (financeCo == member.id) {
+            for (let publisher of publishers) { 
+                if (publisher == member.id) {
                     res.send({'error': 'member id already exists'});
                 }
             }
@@ -136,46 +123,40 @@ exports.autoLoad = async function autoLoad(req, res, next) {
             console.log('Next');                
 
         } 
-        
-        // iterate through the order objects in the memberList.json file.
-        for (let each in startupFile.items){(function(_idx, _arr){itemTable.push(_arr[_idx]);})(each, startupFile.items);}
-        svc.saveItemTable(itemTable);
 
-        let allOrders = new Array();
+        let allPatents = new Array();
 
-        console.log('Get all orders'); 
-        for (let buyer of buyers) { 
-            const buyerResponse = await contract.evaluateTransaction('GetState', buyer);
-            var _buyerjsn = JSON.parse(JSON.parse(buyerResponse.toString()));       
+        console.log('Get all patents'); 
+        for (let owner of owners) { 
+            const ownerResponse = await contract.evaluateTransaction('GetState', owner);
+            var _ownerjsn = JSON.parse(JSON.parse(ownerResponse.toString()));       
             
-            for (let orderNo of _buyerjsn.orders) {                 
-                allOrders.push(orderNo);            
+            for (let patentNumber of _ownerjsn.patents) {                 
+                allPatents.push(patentNumber);            
             }                           
         }
 
-        console.log('Go through all orders'); 
-        for (let order of startupFile.assets) {
+        console.log('Go through all patents'); 
+        for (let patent of startupFile.assets) {
 
-            let _tmp = svc.addItems(order, itemTable);
-            let items = JSON.stringify(_tmp.items);
-            let amount = _tmp.amount.toString();
+            console.log('\npatent.number: ' + patent.patentNumber);
+            console.log('patent.industry: ' + patent.industry);
+            console.log('patent.description: ' + patent.description);
+            console.log('patent.owner: ' + patent.owner);
+            console.log('patent.verifier: ' + patent.verifier);
+            console.log('patent.publisher: ' + patent.publisher);
+       
 
-            console.log('\norder.id: ' + order.id);
-            console.log('order.buyer: ' + order.buyer);
-            console.log('order.seller: ' + order.seller);
-            console.log('financeCoID: ' + financeCoID);
-            console.log('items: ' + items);
-            console.log('amount: ' + amount);
-
-            for (let orderNo of allOrders) { 
-                if (orderNo == order.id) {
-                    res.send({'error': 'order already exists'});
+            for (let patentNumber of allPatents) { 
+                if (patentNumber == patent.patentNumber) {
+                    res.send({'error': 'patent already exists'});
                 }
-            }            
+            }
+            console.log("passed for");            
 
-            const createOrderResponse = await contract.submitTransaction('CreateOrder', order.buyer, order.seller, financeCoID, order.id, items, amount);
-            console.log('createOrderResponse: ')
-            console.log(JSON.parse(createOrderResponse.toString()));
+            const createPatentResponse = await contract.submitTransaction('CreatePatent', patent.patentNumber, patent.industry, patent.description, patent.owner, patent.publisher, patent.verifier );
+            console.log('createPatentResponse: ')
+            console.log(JSON.parse(createPatentResponse.toString()));
 
             console.log('Next');
                       

@@ -4,6 +4,6 @@
 
 'use strict';
 
-const MyContract = require('./lib/globalFinance.js');
+const MyContract = require('./lib/globalPatent.js');
 
 module.exports.contracts = [ MyContract ];
