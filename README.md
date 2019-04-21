@@ -5,7 +5,8 @@ b. Package the smart contract globalPatent.js
 c. Install the chaincode  
 d. Instantiate the chaincode  
 
-## 2. Run the client
+## 2. Run the client 
+##Changes made in these files: controller/restapi/features/fabric/ autoload.js & getBlockchain.js & hlcAdmin.js
 
 In a new terminal, navigate to the `web-app` directory:
 
