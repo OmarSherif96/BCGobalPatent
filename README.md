@@ -1,6 +1,11 @@
 
+## 1. Install IBM Blockchain extension on VSCode
+a. Open VScode inside contract folder
+b. Package the smart contract globalPatent.js
+c. Install the chaincode
+d. Instantiate the chaincode
 
-## 1. Run the application
+## 2. Run the client
 
 In a new terminal, navigate to the `web-app` directory:
 
@@ -18,13 +23,13 @@ In a new terminal, navigate to the `web-app` directory:
   npm start
   ```
 
-## 2. Postman
+## 3. Postman
 
 # Get Blockchain
 Post:
 http://localhost:6001/fabric/getBlockchain
 
-# Add Member
+## Add Member
 Post:
 http://localhost:6001/fabric/admin/addMember
 
@@ -35,7 +40,7 @@ Body:
 	"companyName" : "IBMX"
 }
 
-# Get Member
+## Get Member
 Post:
 http://localhost:6001/fabric/admin/getMembers
 
@@ -44,6 +49,6 @@ Body:
 	"registry": "Owner"
 }
 
-# Get Assets
+## Get Assets
 Post: 
 http://localhost:6001/fabric/admin/getAssets
