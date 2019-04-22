@@ -12,8 +12,9 @@
   "author": "IBM",
   "license": "Apache-2.0",
   "devDependencies": {
-    "extend": "",
     "browserfs": "^1.2.0",
+    "extend": "",
+    "jshint": "^2.10.2",
     "mkdirp": "^0.5.1"
   },
   "dependencies": {
