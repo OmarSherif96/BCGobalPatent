@@ -15,7 +15,7 @@
     ],
     "assets":
     [   
-        {"patentNumber": "001", "industry": "gov", "description": "gov patent", "owner": "owner1@hsbc.com", "verifier": "verifier1@nbe.com", "publisher": "publisher1@fgb.com" },
-        {"patentNumber": "002", "industry": "banking", "description": "banking patent", "owner": "owner2@hsbc.com", "verifier": "verifier2@nbe.com", "publisher": "publisher1@fgb.com" }
+        {"patentNumber": "001", "priorArt" : "yes", "industry": "gov", "description": "gov patent", "owner": "owner1@hsbc.com", "verifier": "verifier1@nbe.com", "publisher": "publisher1@fgb.com"},
+        {"patentNumber": "002", "priorArt" : "no", "industry": "banking", "description": "banking patent", "owner": "owner2@hsbc.com", "verifier": "verifier2@nbe.com", "publisher": "publisher1@fgb.com"}
     ]
 }

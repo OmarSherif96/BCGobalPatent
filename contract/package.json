@@ -1,6 +1,6 @@
 {
     "name": "globalpatent",
-    "version": "0.0.15",
+    "version": "0.0.21",
     "description": "Global Patent Contract",
     "main": "index.js",
     "engines": {

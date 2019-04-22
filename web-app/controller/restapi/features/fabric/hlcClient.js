@@ -130,18 +130,8 @@ exports.getItemTable = function (req, res, next)
  * @returns {Array} an array of assets
  * @function
  */
-exports.orderAction = async function (req, res, next) {
-    let method = 'orderAction';
-    console.log(method+' req.body.participant is: '+req.body.participant );
-    
-    if ((req.body.action === 'Dispute') && (typeof(req.body.reason) !== 'undefined') && (req.body.reason.length > 0) )
-    {/*let reason = req.body.reason;*/}
-    else {
-        if ((req.body.action === 'Dispute') && ((typeof(req.body.reason) === 'undefined') || (req.body.reason.length <1) ))
-            {res.send({'result': 'failed', 'error': 'no reason provided for dispute'});}
-    }
-    if (svc.m_connection === null) {svc.createMessageSocket();}
-
+exports.patentAction = async function (req, res, next) {
+    let method = 'patentAction';
     // Main try/catch block
     try {
 
@@ -153,96 +143,34 @@ exports.orderAction = async function (req, res, next) {
         const network = await gateway.getNetwork('mychannel');
 
         // Get addressability to  contract
-        const contract = await network.getContract('globalfinancing');
+        const contract = await network.getContract('globalpatent');
 
-
-        // Get state of order
-        const responseOrder = await contract.evaluateTransaction('GetState', req.body.orderNo);
-        console.log('responseOrder: ');
-        console.log(JSON.parse(responseOrder.toString()));
-        let order = JSON.parse(JSON.parse(responseOrder.toString()));
+        // Get state of patent
+        const responsePatent = await contract.evaluateTransaction('GetState', req.body.patentNumber);
+        console.log('responsePatent: ');
+        console.log(JSON.parse(responsePatent.toString()));
+        let patent = JSON.parse(JSON.parse(responsePatent.toString()));
         
         // Perform action on the order
         switch (req.body.action)
         {
-        case 'Pay':
-            console.log('Pay entered');
-            const payResponse = await contract.submitTransaction('Pay', order.orderNumber, order.sellerId, financeCoID);
-            console.log('payResponse: ');
-            console.log(JSON.parse(payResponse.toString()));
+        case 'VerifyPatent':
+            console.log('VerifyPatent entered');
+            const verifyResponse = await contract.submitTransaction('VerifyPatent', patent.patentNumber, patent.ownerId, patent.verifierId);
+            console.log('verifyResponse: ');
+            console.log(JSON.parse(verifyResponse.toString()));
             break;
-        case 'Dispute':
-            console.log('Dispute entered');
-            const disputeResponse = await contract.submitTransaction('Dispute', order.orderNumber, order.buyerId, order.sellerId, financeCoID, req.body.reason);
-            console.log('disputeResponse_response: ');
-            console.log(JSON.parse(disputeResponse.toString()));            
+        case 'RejectPatent':
+            console.log('RejectPatent entered');
+            const rejectResponse = await contract.submitTransaction('RejectPatent', patent.patentNumber, patent.ownerId, patent.verifierId);
+            console.log('rejectResponse: ');
+            console.log(JSON.parse(rejectResponse.toString()));            
             break;
-        case 'Purchase':
-            console.log('Purchase entered');
-            const buyResponse = await contract.submitTransaction('Buy', order.orderNumber, order.buyerId, order.sellerId);
-            console.log('buyResponse: ');
-            console.log(JSON.parse(buyResponse.toString()));             
-            break;
-        case 'Order From Supplier':
-            console.log('Order from Supplier entered for '+order.orderNumber+ ' inbound id: '+ req.body.participant+' with order.seller as: '+order.sellerId+' with provider as: '+req.body.provider);
-            const orderSupplierResponse = await contract.submitTransaction('OrderFromSupplier', order.orderNumber, order.sellerId, req.body.provider);
-            console.log('orderSupplierResponse: ')
-            console.log(JSON.parse(orderSupplierResponse.toString()));
-            break;
-        case 'Request Payment':
-            console.log('Request Payment entered');
-            const requestPaymentResponse = await contract.submitTransaction('RequestPayment', order.orderNumber, order.sellerId, financeCoID);
-            console.log('requestPaymentResponse_response: ');
-            console.log(JSON.parse(requestPaymentResponse.toString()));
-            break;
-        case 'Refund':
-            console.log('Refund Payment entered');
-            const refundResponse = await contract.submitTransaction('Refund', order.orderNumber, order.sellerId, financeCoID, req.body.reason);
-            console.log('refundResponse_response: ');
-            console.log(JSON.parse(refundResponse.toString()));            
-            break;
-        case 'Resolve':
-            console.log('Resolve entered');
-            const resolveResponse = await contract.submitTransaction('Resolve', order.orderNumber, order.buyerId, order.sellerId, order.shipperId, order.providerId, financeCoID, req.body.reason);
-            console.log('resolveResponse_response: ');
-            console.log(JSON.parse(resolveResponse.toString()));
-            break;
-        case 'Request Shipping':
-            console.log('Request Shipping entered');
-            const requestShippingResponse = await contract.submitTransaction('RequestShipping', order.orderNumber, order.providerId, req.body.shipper);
-            console.log('requestShippingResponse: ');
-            console.log(JSON.parse(requestShippingResponse.toString()));
-            break;
-        case 'Update Delivery Status':
-            console.log('Update Delivery Status');
-            const deliveringResponse = await contract.submitTransaction('Delivering', order.orderNumber, order.shipperId, req.body.delivery);
-            console.log('deliveringResponse: ');
-            console.log(JSON.parse(deliveringResponse.toString()));
-            break;
-        case 'Delivered':
-            console.log('Delivered entered');
-            console.log('participant: ' + req.body.participant);
-            const deliverResponse = await contract.submitTransaction('Deliver', order.orderNumber, req.body.participant);
-            console.log('deliverResponse_response: ');
-            console.log(JSON.parse(deliverResponse.toString()));
-            break;
-        case 'BackOrder':
-            console.log('BackOrder entered');
-            const backOrderResponse = await contract.submitTransaction('BackOrder', order.orderNumber, order.providerId, req.body.reason);
-            console.log('backOrderResponse_response: ');
-            console.log(JSON.parse(backOrderResponse.toString()));            
-            break;
-        case 'Authorize Payment':
-            console.log('Authorize Payment entered');
-            const authorizePaymentResponse = await contract.submitTransaction('AuthorizePayment', order.orderNumber, order.buyerId, financeCoID);
-            console.log('authorizePaymentResponse: ');
-            console.log(JSON.parse(authorizePaymentResponse.toString()));
-            break;
-        case 'Cancel':
-            console.log('Cancel entered');
-            const orderCancelResponse = await contract.submitTransaction('OrderCancel', order.orderNumber, order.sellerId, order.providerId);
-            console.log('orderCancelResponse_response: ')
-            console.log(JSON.parse(orderCancelResponse.toString()));            
+        case 'PublishPatent':
+            console.log('PublishPatent entered');
+            const publishResponse = await contract.submitTransaction('PublishPatent', patent.patentNumber, patent.ownerId, patent.publisherId);
+            console.log('publishResponse: ');
+            console.log(JSON.parse(publishResponse.toString()));             
             break;
         default :
             console.log('default entered for action: '+req.body.action);
@@ -253,7 +181,7 @@ exports.orderAction = async function (req, res, next) {
         console.log('Disconnect from Fabric gateway.');
         console.log('orderAction Complete');
         await gateway.disconnect();
-        res.send({'result': ' order '+req.body.orderNo+' successfully updated to '+req.body.action});
+        res.send({'result': ' order '+req.body.patentNumber+' successfully updated to '+req.body.action});
             
     } catch (error) {
         console.log(`Error processing transaction. ${error}`);
@@ -278,37 +206,23 @@ exports.addPatent = async function (req, res, next) {
     let method = 'addPatent';
     console.log(method+' req.body.owner is: '+req.body.owner);    
     let patentNumber = '00' + Math.floor(Math.random() * 10000);
-    //let patent = {};
-    // patent = svc.createOrderTemplate(order);
-    // if (svc.m_connection === null) {svc.createMessageSocket();}
-    // Main try/catch block
     try {
         // A gateway defines the peers used to access Fabric networks
         const gateway = new Gateway();
         await gateway.connect(ccp, { wallet, identity: 'User1@org1.example.com', discovery: { enabled: false } });
         // Get addressability to network
         const network = await gateway.getNetwork('mychannel');
-
         // Get addressability to  contract
         const contract = await network.getContract('globalpatent');
-        // let items;
-        // let amount;
-        // for (let each in req.body.items){
-        //     (function(_idx, _arr){   
-        //         _arr[_idx].description = _arr[_idx].itemDescription;
-        //         order.items.push(JSON.stringify(_arr[_idx]));
-        //         order.amount += parseInt(_arr[_idx].extendedPrice);
-        //     })(each, req.body.items);
-        // }
-        // items = JSON.stringify(order.items);
-        // amount = order.amount.toString();
         console.log("Req: ");
         console.log(patentNumber);
         console.log(req.body.priorArt);
         console.log(req.body.industry);
         console.log(req.body.description);
         console.log(req.body.owner);
-        const createPatentResponse = await contract.submitTransaction('CreatePatent', patentNumber, req.body.priorArt, req.body.industry, req.body.description, req.body.owner);
+        console.log(req.body.verifier);
+        console.log(req.body.publisher);
+        const createPatentResponse = await contract.submitTransaction('CreatePatent', req.body.owner, req.body.publisher, req.body.verifier, patentNumber, req.body.priorArt, req.body.industry, req.body.description);
         console.log('createPatentResponse: ')
         console.log(JSON.parse(createPatentResponse.toString()));
 

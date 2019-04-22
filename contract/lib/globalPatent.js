@@ -107,8 +107,7 @@ class GlobalPatent extends Contract {
     }
 
     // add a patent object to the blockchain state identifited by the patentNumber
-    async CreatePatent(ctx, patentNumber, priorArt, industry, description, ownerId) {
-        console.log("CreatePatent");
+    async CreatePatent(ctx, ownerId, publisherId, verifierId, patentNumber, priorArt, industry, description) {
         console.log("reached here");
         // verify ownerId
         let ownerData = await ctx.stub.getState(ownerId);
@@ -122,29 +121,29 @@ class GlobalPatent extends Contract {
             throw new Error('owner not found');
         }
 
-        //  // verify verifierId
-        //  let verifierData = await ctx.stub.getState(verifierId);
-        //  let verifier;
-        //  if (verifierData) {
-        //     verifier = JSON.parse(verifierData.toString());
-        //      if (verifier.type !== 'verifier') {
-        //          throw new Error('verifier not identified');
-        //      }
-        //  } else {
-        //      throw new Error('verifier not found');
-        //  }
+         // verify verifierId
+         let verifierData = await ctx.stub.getState(verifierId);
+         let verifier;
+         if (verifierData) {
+            verifier = JSON.parse(verifierData.toString());
+             if (verifier.type !== 'verifier') {
+                 throw new Error('verifier not identified');
+             }
+         } else {
+             throw new Error('verifier not found');
+         }
 
-        // // verify publisherId
-        // let publisherData = await ctx.stub.getState(publisherId);
-        // let publisher;
-        // if (publisherData) {
-        //     publisher = JSON.parse(publisherData.toString());
-        //     if (publisher.type !== 'publisher') {
-        //         throw new Error('publisher not identified');
-        //     }
-        // } else {
-        //     throw new Error('publisher not found');
-        // }
+        // verify publisherId
+        let publisherData = await ctx.stub.getState(publisherId);
+        let publisher;
+        if (publisherData) {
+            publisher = JSON.parse(publisherData.toString());
+            if (publisher.type !== 'publisher') {
+                throw new Error('publisher not identified');
+            }
+        } else {
+            throw new Error('publisher not found');
+        }
 
         console.log("reached patent");
 
@@ -154,9 +153,9 @@ class GlobalPatent extends Contract {
             industry: industry,
             description: description,
             status: JSON.stringify(patentStatus.Created),
-            owners: [{ownerId: ownerId}]
-            // verifierId: verifierId,
-            // publisherId: publisherId
+            ownerId: ownerId,
+            verifierId: verifierId,
+            publisherId: publisherId
         };
 
         //add patent to owner
@@ -210,7 +209,7 @@ class GlobalPatent extends Contract {
             patent.status = JSON.stringify(patentStatus.Verified);
             await ctx.stub.putState(patentNumber, Buffer.from(JSON.stringify(patent)));
 
-            //add patent to the verifier after being verified
+            //add patent to the publisher after being published
             verifier.patents.push(patentNumber);
             await ctx.stub.putState(verifierId, Buffer.from(JSON.stringify(verifier)));
 
@@ -261,8 +260,8 @@ class GlobalPatent extends Contract {
             await ctx.stub.putState(patentNumber, Buffer.from(JSON.stringify(patent)));
 
             //add patent to the publisher after being published
-            publisher.patents.push(patentNumber);
-            await ctx.stub.putState(publisherId, Buffer.from(JSON.stringify(publisher)));
+            verifier.patents.push(patentNumber);
+            await ctx.stub.putState(verifierId, Buffer.from(JSON.stringify(verifier)));
 
             return JSON.stringify(patent);
         } else {
@@ -309,6 +308,11 @@ class GlobalPatent extends Contract {
         if (patent.status == JSON.stringify(patentStatus.Verified)) {
             patent.status = JSON.stringify(patentStatus.Published);
             await ctx.stub.putState(patentNumber, Buffer.from(JSON.stringify(patent)));
+
+            //add patent to the publisher after being published
+            publisher.patents.push(patentNumber);
+            await ctx.stub.putState(publisherId, Buffer.from(JSON.stringify(publisher)));
+
             return JSON.stringify(patent);
         } else {
             throw new Error('patent not verified');

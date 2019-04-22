@@ -71,4 +71,4 @@ router.post('/fabric/admin/addMember*', hlcAdmin.addMember);
 router.get('/fabric/client/getItemTable*', hlcClient.getItemTable);
 router.post('/fabric/client/getMyOrders*', hlcClient.getMyOrders);
 router.post('/fabric/client/addPatent*', hlcClient.addPatent);
-router.post('/fabric/client/orderAction*', hlcClient.orderAction);
+router.post('/fabric/client/patentAction*', hlcClient.patentAction);

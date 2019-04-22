@@ -140,6 +140,7 @@ exports.autoLoad = async function autoLoad(req, res, next) {
         for (let patent of startupFile.assets) {
 
             console.log('\npatent.number: ' + patent.patentNumber);
+            console.log('patent.priorArt: ' + patent.priorArt);
             console.log('patent.industry: ' + patent.industry);
             console.log('patent.description: ' + patent.description);
             console.log('patent.owner: ' + patent.owner);
@@ -154,8 +155,8 @@ exports.autoLoad = async function autoLoad(req, res, next) {
             }
             console.log("passed for");            
 
-            const createPatentResponse = await contract.submitTransaction('CreatePatent', patent.patentNumber, patent.industry, patent.description, patent.owner, patent.publisher, patent.verifier );
-            console.log('createPatentResponse: ')
+            const createPatentResponse = await contract.submitTransaction('CreatePatent', patent.owner, patent.publisher, patent.verifier, patent.patentNumber, patent.priorArt, patent.industry, patent.description);
+            console.log('createPatentResponse: ');
             console.log(JSON.parse(createPatentResponse.toString()));
 
             console.log('Next');
