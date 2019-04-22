@@ -6,7 +6,7 @@ c. Install the chaincode
 d. Instantiate the chaincode  
 
 ## 2. Run the client 
-##Changes made in these files: controller/restapi/features/fabric/ autoload.js & getBlockchain.js & hlcAdmin.js
+Changes made in these files: controller/restapi/features/fabric/ autoload.js & getBlockchain.js & hlcAdmin.js
 
 In a new terminal, navigate to the `web-app` directory:
 
@@ -26,11 +26,15 @@ In a new terminal, navigate to the `web-app` directory:
 
 ## 3. Postman
 
-# Get Blockchain
+Setup Autoload
+Post:
+http://localhost:6001/setup/autoLoad
+
+Get Blockchain
 Post:
 http://localhost:6001/fabric/getBlockchain
 
-## Add Member
+Add Member
 Post:
 http://localhost:6001/fabric/admin/addMember
 
@@ -41,7 +45,7 @@ Body:
 	"companyName" : "IBMX"
 }
 
-## Get Member
+Get Member
 Post:
 http://localhost:6001/fabric/admin/getMembers
 

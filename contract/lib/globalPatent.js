@@ -107,8 +107,9 @@ class GlobalPatent extends Contract {
     }
 
     // add a patent object to the blockchain state identifited by the patentNumber
-    async CreatePatent(ctx, patentNumber, industry, description, ownerId, publisherId, verifierId) {
-
+    async CreatePatent(ctx, patentNumber, priorArt, industry, description, ownerId) {
+        console.log("CreatePatent");
+        console.log("reached here");
         // verify ownerId
         let ownerData = await ctx.stub.getState(ownerId);
         let owner;
@@ -121,40 +122,41 @@ class GlobalPatent extends Contract {
             throw new Error('owner not found');
         }
 
-         // verify verifierId
-         let verifierData = await ctx.stub.getState(verifierId);
-         let verifier;
-         if (verifierData) {
-            verifier = JSON.parse(verifierData.toString());
-             if (verifier.type !== 'verifier') {
-                 throw new Error('verifier not identified');
-             }
-         } else {
-             throw new Error('verifier not found');
-         }
+        //  // verify verifierId
+        //  let verifierData = await ctx.stub.getState(verifierId);
+        //  let verifier;
+        //  if (verifierData) {
+        //     verifier = JSON.parse(verifierData.toString());
+        //      if (verifier.type !== 'verifier') {
+        //          throw new Error('verifier not identified');
+        //      }
+        //  } else {
+        //      throw new Error('verifier not found');
+        //  }
 
-        // verify publisherId
-        let publisherData = await ctx.stub.getState(publisherId);
-        let publisher;
-        if (publisherData) {
-            publisher = JSON.parse(publisherData.toString());
-            if (publisher.type !== 'publisher') {
-                throw new Error('publisher not identified');
-            }
-        } else {
-            throw new Error('publisher not found');
-        }
+        // // verify publisherId
+        // let publisherData = await ctx.stub.getState(publisherId);
+        // let publisher;
+        // if (publisherData) {
+        //     publisher = JSON.parse(publisherData.toString());
+        //     if (publisher.type !== 'publisher') {
+        //         throw new Error('publisher not identified');
+        //     }
+        // } else {
+        //     throw new Error('publisher not found');
+        // }
 
         console.log("reached patent");
 
         let patent = {
             patentNumber: patentNumber,
+            priorArt: priorArt,
             industry: industry,
             description: description,
             status: JSON.stringify(patentStatus.Created),
-            owners: [{ownerId: ownerId}],
-            verifierId: verifierId,
-            publisherId: publisherId
+            owners: [{ownerId: ownerId}]
+            // verifierId: verifierId,
+            // publisherId: publisherId
         };
 
         //add patent to owner
