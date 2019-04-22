@@ -27,33 +27,35 @@ In a new terminal, navigate to the `web-app` directory:
 ## 3. Postman
 
 Setup Autoload  
-Post:
-http://localhost:6001/setup/autoLoad  
+  Post:
+  http://localhost:6001/setup/autoLoad  
 
 Get Blockchain  
-Post:
-http://localhost:6001/fabric/getBlockchain  
+  Post:
+  http://localhost:6001/fabric/getBlockchain  
 
 Add Member  
-Post:
-http://localhost:6001/fabric/admin/addMember  
-
-Body:  
-{
-	"type" : "Owner",
-	"id" : "Ahmed",
-	"companyName" : "IBMX"
-}  
+  Post:
+  http://localhost:6001/fabric/admin/addMember  
+  ```bash
+  Body:  
+  {
+  	"type" : "Owner",
+  	"id" : "Ahmed",
+  	"companyName" : "IBMX"
+  }
+  ``` 
 
 Get Member  
-Post:
-http://localhost:6001/fabric/admin/getMembers  
-
-Body:
-{
-	"registry": "Owner"
-}  
+  Post:
+  http://localhost:6001/fabric/admin/getMembers  
+  ```bash
+  Body:
+  {
+  	"registry": "Owner"
+  }
+  ```  
 
 Get Assets  
-Post: 
-http://localhost:6001/fabric/admin/getAssets  
+  Post: 
+  http://localhost:6001/fabric/admin/getAssets  
