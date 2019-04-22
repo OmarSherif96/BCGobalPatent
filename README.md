@@ -26,17 +26,17 @@ In a new terminal, navigate to the `web-app` directory:
 
 ## 3. Postman
 
-Setup Autoload  
+#### Setup Autoload  
 File: Autoload.js  
   Post:
   http://localhost:6001/setup/autoLoad  
 
-Get Blockchain  
+#### Get Blockchain  
 File: getBlockchain.js  
   Post:
   http://localhost:6001/fabric/getBlockchain  
 
-Add Member  
+#### Add Member  
 File: hlcAdmin.js  
   Post:
   http://localhost:6001/fabric/admin/addMember  
@@ -49,7 +49,7 @@ File: hlcAdmin.js
   }
   ``` 
 
-Get Member  
+#### Get Member  
 File : hlcAdmin.js  
   Post:
   http://localhost:6001/fabric/admin/getMembers  
@@ -60,12 +60,12 @@ File : hlcAdmin.js
   }
   ```  
 
-Get Assets(Patents)  
+#### Get Assets(Patents)  
 File : hlcAdmin.js  
   Post: 
   http://localhost:6001/fabric/admin/getAssets  
 
-Create Patent  
+#### Create Patent  
 File : hlcClient.js  
   Post:
   http://localhost:6001/fabric/client/addPatent
@@ -81,7 +81,7 @@ File : hlcClient.js
   }
   ```
 
-Patent Actions (action: VerifyPatent/RejectPatent/PublishPatent)  
+#### Patent Actions (action: VerifyPatent/RejectPatent/PublishPatent)  
 File : hlcClient.js  
   Post:
   http://localhost:6001/fabric/client/patentAction
