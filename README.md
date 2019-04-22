@@ -65,7 +65,7 @@ File : hlcAdmin.js
   Post: 
   http://localhost:6001/fabric/admin/getAssets  
 
-Create Patent
+Create Patent  
 File : hlcClient.js  
   Post:
   http://localhost:6001/fabric/client/addPatent
@@ -81,7 +81,7 @@ File : hlcClient.js
   }
   ```
 
-Patent Actions (action: VerifyPatent/RejectPatent/PublishPatent) 
+Patent Actions (action: VerifyPatent/RejectPatent/PublishPatent)  
 File : hlcClient.js  
   Post:
   http://localhost:6001/fabric/client/patentAction
